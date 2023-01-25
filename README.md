@@ -35,7 +35,7 @@ phi = solve_poisson(U)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/images/poisson-ops.png" width="75%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/poisson-ops.png" width="75%"></img>
 </div>
 
 
