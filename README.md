@@ -35,7 +35,7 @@ phi = solve_poisson(U)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/poisson-ops.png" width="75%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/poisson-ops.png" width="75%"></img>
 </div>
 
 
@@ -51,7 +51,7 @@ phi = solve_poisson(U)
 plot_images([U, phi], ['U', 'φ'], cmap='afmhot')
 ```
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case1_u_phi.png" width="65%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case1_u_phi.png" width="65%"></img>
 </div>
 
 ```python
@@ -61,7 +61,7 @@ E = np.sqrt(Ex**2 + Ey**2)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case1_E.png" width="50%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case1_E.png" width="50%"></img>
 </div>
 
 
@@ -84,11 +84,11 @@ phi = solve_poisson(U=U, Eps=Eps)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case2_rho_eps_phi.png" width="85%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case2_rho_eps_phi.png" width="85%"></img>
 </div>
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case2_E.png" width="50%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case2_E.png" width="50%"></img>
 </div>
 
 
@@ -104,11 +104,11 @@ phi = solve_poisson(U=np.zeros((N, N)), Rho=Rho)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case3_rho_phi.png" width="65%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case3_rho_phi.png" width="65%"></img>
 </div>
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case3_E.png" width="50%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case3_E.png" width="50%"></img>
 </div>
 
 
@@ -126,11 +126,11 @@ phi = solve_poisson(U=U, Rho=Rho)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case4_u_rho_phi.png" width="85%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case4_u_rho_phi.png" width="85%"></img>
 </div>
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case4_E.png" width="50%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case4_E.png" width="50%"></img>
 </div>
 
 
@@ -147,11 +147,11 @@ phi = solve_poisson(Eps=Eps, Rho=Rho)
 ```
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case5_eps_rho_phi.png" width="85%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case5_eps_rho_phi.png" width="85%"></img>
 </div>
 
 <div align="center">
-  <img src="https://github.com/nipponjo/poisson-fdm-solver/blob/master/docs/case5_E.png" width="50%"></img>
+  <img src="https://github.com/nipponjo/poisson-fdm/blob/main/docs/case5_E.png" width="50%"></img>
 </div>
 
 
