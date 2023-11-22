@@ -182,7 +182,9 @@ cap = lambda t: ops.plate_capacitor(center=(N/2, N/2),
                                     rotation=90)
 ```
 
-https://user-images.githubusercontent.com/28433296/144766573-c39c91f9-94f3-4821-a378-334ebaa1578b.mp4
+https://github.com/nipponjo/poisson-fdm/assets/28433296/af6ac4ae-0a9c-43c5-b08f-c33e3a777552
+
+
 
 ```python
 theta = lambda t: 360*t
@@ -194,7 +196,10 @@ arcs2 = lambda t: ops.composition(
 )
 ```
 
-https://user-images.githubusercontent.com/28433296/144761251-1b8738c2-17b5-4254-afa1-eaa12537cae0.mp4
+https://github.com/nipponjo/poisson-fdm/assets/28433296/e1766860-7ac1-4de3-9cb4-5b58cc4aa0d6
+
+
+
 
 ```python
 voltage = lambda t, phase: 10*np.sin(2*np.pi*t + phase/180*np.pi)                                        
@@ -204,8 +209,9 @@ stars = lambda t: ops.composition(
   ops.star(center=(N/2, N/2-N/5), N_angles=6, ro=N/10, value=voltage(t, phase=-120)))
 ```
 
+https://github.com/nipponjo/poisson-fdm/assets/28433296/1b719411-49be-405a-8e8e-321fd35378a5
 
-https://user-images.githubusercontent.com/28433296/144771758-a62742e6-0e36-4f46-ab9f-32e45014d468.mp4
+
 
 # References
 [Nagel 2012 - Solving the Generalized Poisson Equation Using the
