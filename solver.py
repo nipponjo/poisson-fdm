@@ -1,93 +1,86 @@
 import numpy as np
-from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import spsolve
 from scipy.sparse import diags
+from scipy.sparse.linalg import spsolve
 
 
-def solve_poisson(U, Rho=None, Eps=None):
+def solve_poisson(U: np.ndarray, 
+                  rho: np.ndarray = None, 
+                  eps: np.ndarray = None
+                  ) -> np.ndarray:
+    """
+    Solve a 2D electrostatic Poisson equation on a rectangular grid
+    using finite differences and sparse linear algebra.
 
+    Equation (discrete form):
+        ∇ · (ε ∇φ) = -ρ,
+    with boundary conditions set by prescribed values in U.
+
+    Parameters
+    ----------
+    U : (Nr, Nc) ndarray
+        Potential matrix with Dirichlet boundary conditions.
+        Nonzero entries on the boundary are treated as fixed.
+    rho : (Nr, Nc) ndarray, optional
+        Charge density distribution. Defaults to zeros.
+    eps : (Nr, Nc) ndarray, optional
+        Spatially varying dielectric distribution. Defaults to ones.
+
+    Returns
+    -------
+    phi : (Nr, Nc) ndarray
+        Solution for the potential satisfying the discrete Poisson equation.
+
+    Notes
+    -----
+    - Uses a 5-point stencil with variable ε.
+    - Boundaries: outer edges are fixed; additionally, any non-zero entry
+      of U is treated as a Dirichlet boundary point.
+    - Internally flattens the 2D arrays to build a sparse matrix of size
+      (Nr*Nc) x (Nr*Nc).
+    """
     Nr, Nc = U.shape
 
-    if Rho is None:
-        Rho = np.zeros_like(U)
+    if rho is None:
+        rho = np.zeros_like(U, dtype=float)
+    if eps is None:
+        eps = np.ones_like(U, dtype=float)
 
-    if Eps is None:
-        Eps = np.ones_like(U)
+    # pad eps to simplify neighbor indexing
+    epsil = np.r_[np.ones(Nc), eps.ravel(), 1]
 
-    Epsil = np.r_[np.ones(Nc), Eps.flatten(), 1]
+    # identify Dirichlet boundary nodes
+    bound = np.zeros_like(U, dtype=bool)
+    bound[0, :] = bound[-1, :] = True
+    bound[:, 0] = bound[:, -1] = True
+    bound[np.abs(U) > 1e-7] = True
+    bound = bound.ravel()
 
-    Bound = np.zeros_like(U, dtype=bool)
-    Bound[0, :] = True
-    Bound[Nr-1, :] = True
-    Bound[:, 0] = True
-    Bound[:, Nc-1] = True
-    Bound[abs(U) > 1e-7] = True
-    Bound = Bound.flatten()
+    # diagonal entries: central coefficients
+    main_diag = -(epsil[Nc:Nr*Nc+Nc] + epsil[:Nr*Nc] +
+                  epsil[1+Nc:Nr*Nc+Nc+1] + epsil[1:Nr*Nc+1])
+    east_diag = 0.5*(epsil[1:Nr*Nc] + epsil[1+Nc:Nr*Nc+Nc])
+    west_diag = 0.5*(epsil[1+Nc:Nr*Nc+Nc] + epsil[1:Nr*Nc])
+    north_diag = 0.5*(epsil[1+Nc:Nr*Nc+1] + epsil[Nc:Nr*Nc])
+    south_diag = 0.5*(epsil[Nc:Nr*Nc] + epsil[1+Nc:Nr*Nc+1])
 
-    s = [-(Epsil[Nc:Nr*Nc+Nc] + Epsil[:Nr*Nc] +
-           Epsil[1+Nc:Nr*Nc+Nc+1] + Epsil[1:Nr*Nc+1]),
-         0.5*(Epsil[1:Nr*Nc] + Epsil[1+Nc:Nr*Nc+Nc]),
-         0.5*(Epsil[1+Nc:Nr*Nc+Nc] + Epsil[1:Nr*Nc]),
-         0.5*(Epsil[1+Nc:Nr*Nc+1] + Epsil[Nc:Nr*Nc]),
-         0.5*(Epsil[Nc:Nr*Nc] + Epsil[1+Nc:Nr*Nc+1])]
+    # apply boundary conditions
+    main_diag[bound] = 1.0
+    east_diag[bound[1:Nr*Nc]] = 0.0
+    west_diag[bound[:-1]] = 0.0
+    north_diag[bound[Nc:Nr*Nc]] = 0.0
+    south_diag[bound[:-Nc]] = 0.0
 
-    s[0][Bound] = 1
-    s[1][Bound[1:Nr*Nc]] = 0
-    s[2][Bound[:Nr*Nc-1]] = 0
-    s[3][Bound[Nc:Nr*Nc]] = 0
-    s[4][Bound[:Nr*Nc-Nc]] = 0
+    # build sparse matrix with 5-point stencil
+    A = diags(
+        [main_diag, east_diag, west_diag, north_diag, south_diag],
+        [0, -1, 1, -Nc, Nc],
+        format="csr"
+    )
 
-    S = diags(s, [0, -1, 1, -Nc, Nc])
-    S = csr_matrix(S)
+    # right-hand side
+    b = U.ravel() - rho.ravel()
 
-    b = U.flatten() - Rho.flatten()
-
-    phi = spsolve(S, b)
-    phi = phi.reshape(Nr, Nc)
-
-    return phi
-
-
-def solve_poisson_(U, Rho=None, Eps=None):
-
-    N, M = U.shape
-    assert N == M
-
-    if Rho is None:
-        Rho = np.zeros_like(U)
-
-    if Eps is None:
-        Eps = np.ones_like(U)
-
-    Epsil = np.r_[np.ones(N), Eps.flatten(), 1]
-
-    Bound = np.zeros_like(U, dtype=bool)
-    Bound[0, :] = True
-    Bound[N-1, :] = True
-    Bound[:, 0] = True
-    Bound[:, N-1] = True
-    Bound[abs(U) > 1e-7] = True
-    Bound = Bound.flatten()
-
-    s = [-(Epsil[N:N*N+N] + Epsil[:N*N] +
-           Epsil[1+N:N*N+N+1] + Epsil[1:N*N+1]),
-         0.5*(Epsil[1:N*N] + Epsil[1+N:N*N+N]),
-         0.5*(Epsil[1+N:N*N+N] + Epsil[1:N*N]),
-         0.5*(Epsil[1+N:N*N+1] + Epsil[N:N*N]),
-         0.5*(Epsil[N:N*N] + Epsil[1+N:N*N+1])]
-
-    s[0][Bound] = 1
-    s[1][Bound[1:N*N]] = 0
-    s[2][Bound[:N*N-1]] = 0
-    s[3][Bound[N:N*N]] = 0
-    s[4][Bound[:N*N-N]] = 0
-
-    S = diags(s, [0, -1, 1, -N, N])
-    S = csr_matrix(S)
-
-    b = U.flatten() - Rho.flatten()
-
-    phi = spsolve(S, b)
-    phi = phi.reshape(N, N)
-
+    # solve linear system
+    phi = spsolve(A, b).reshape(Nr, Nc)
+    
     return phi
